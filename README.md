@@ -63,12 +63,14 @@ setpriority [priority] [pid]
 * To prevent starvation, aging has been implemented.  
 * The five priority queues have not been implemented physically; rather they have been stored as a member variable `current_queue` of `struct proc`. This facilitates adding and removing processes and "shifting between queues" by just changing the number, and eliminates the overhead in popping from one queue and pushing to another.
 * Each queue has a time-slice as follows after which they are demoted to a lower priority queue (`current_queue` is decremented).
-
-1. For priority 0: 1 timer tick
-2. For priority 1: 2 timer ticks
-3. For priority 2: 4 timer ticks
-4. For priority 3: 8 timer ticks
-5. For priority 4: 16 timer ticks
+     
+    | Prioirty | Timer Ticks  |  
+    | :---:   | :-: |  
+    | 0 | 1 |   
+    | 1 | 2 |  
+    | 2 | 4 |  
+    | 3 | 8 |  
+    | 4 | 16 |  
 * Aging has been implemented, just before scheduling, via a simple for loop that iterates through the runnable processes, and promotes them to a higher-priority queue if `(ticks - <entry time in current queue>) > 16 ticks`.
 * Demotion of processes after their time slice has been completed is done in `kernel/trap.c`, whenever a timer interrupt occurs. If the time spent in the current queue is greater than 2<sup>(current_queue_number)</sup>, then it is demoted (`current_queue` is incremented).
 * The position of the process in the queue is determined by its `struct proc::entry_time`, which stores the entry time in the current queue. It is reset to the current time whenever it is scheduled, making the wait time in the queue 0.
